@@ -1,14 +1,14 @@
-# Contributing to SIFT
+# Contributing to DIAGNO
 
-Thanks for considering a contribution. SIFT is built deliberately, one
+Thanks for considering a contribution. DIAGNO is built deliberately, one
 milestone at a time — see the [Roadmap](README.md#roadmap) for where things
 stand.
 
 ## Getting started
 
 ```bash
-git clone https://github.com/omarhassanatef/sift.git
-cd sift
+git clone https://github.com/omarhassanatef/diagno.git
+cd diagno
 npm install
 npm run dev -- npm test   # run the CLI from source, no build step
 npm test                  # run the full test suite
@@ -43,7 +43,7 @@ then:
 
 ## Reporting issues
 
-Please include: the command you ran, what SIFT printed, what you expected,
+Please include: the command you ran, what DIAGNO printed, what you expected,
 and your OS/Node version. A minimal reproduction (even a two-file fixture)
 is the single most useful thing you can attach.
 

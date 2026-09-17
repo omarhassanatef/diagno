@@ -1,23 +1,23 @@
-# SIFT
+# DIAGNO
 
 <p align="center">
-  <img src="assets/logo.png" alt="Sift logo" width="180">
+  <img src="assets/logo.png" alt="Diagno logo" width="180">
 </p>
 
 **Make a failed command understandable in seconds.**
 
-SIFT sits between you and a failed command. It runs the command, diagnoses
+DIAGNO sits between you and a failed command. It runs the command, diagnoses
 the failure with fast local checks, falls back to an AI reasoning layer only
 when it has to, and proposes — never silently applies — the smallest safe
 fix.
 
-[![CI](https://github.com/omarhassanatef/sift/actions/workflows/ci.yml/badge.svg)](https://github.com/omarhassanatef/sift/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/sift-cli.svg)](https://www.npmjs.com/package/sift-cli)
+[![CI](https://github.com/omarhassanatef/diagno/actions/workflows/ci.yml/badge.svg)](https://github.com/omarhassanatef/diagno/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/diagno.svg)](https://www.npmjs.com/package/diagno)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node >=18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
 
 ```
-$ sift npm test
+$ diagno npm test
 FAIL src/users.test.ts
   Cannot find module '@/modules/users' from 'src/users.test.ts'
 
@@ -43,11 +43,11 @@ Confidence: 96%
 
 ## Table of contents
 
-- [Why SIFT](#why-sift)
+- [Why DIAGNO](#why-diagno)
 - [Install](#install)
 - [Usage](#usage)
 - [How it works](#how-it-works)
-- [What SIFT can diagnose](#what-sift-can-diagnose)
+- [What DIAGNO can diagnose](#what-diagno-can-diagnose)
 - [AI-assisted fallback](#ai-assisted-fallback)
 - [Applying fixes with `--fix`](#applying-fixes-with---fix)
 - [Configuration](#configuration)
@@ -58,11 +58,11 @@ Confidence: 96%
 - [Contributing](#contributing)
 - [License](#license)
 
-## Why SIFT
+## Why DIAGNO
 
 Most failed commands print everything _except_ the answer: a wall of stack
 trace, a cryptic exit code, a stderr line that assumes you already know the
-codebase. SIFT's philosophy, in order:
+codebase. DIAGNO's philosophy, in order:
 
 1. **Diagnose locally and deterministically whenever possible.** No network
    call, no API key, no waiting — just fast, evidence-backed checks.
@@ -72,25 +72,25 @@ codebase. SIFT's philosophy, in order:
 3. **Never silently modify files.** Every fix is shown as a diff and
    requires your explicit approval before anything is written.
 4. **Remain useful without AI.** Redact secrets and minimize context by
-   default. SIFT is not an autonomous agent — it explains, it doesn't act
+   default. DIAGNO is not an autonomous agent — it explains, it doesn't act
    on its own.
 
 ## Install
 
-Install SIFT globally with npm:
+Install DIAGNO globally with npm:
 
 ```bash
-npm install -g sift-cli
+npm install -g diagno
 ```
 
 From source:
 
 ```bash
-git clone https://github.com/omarhassanatef/sift.git
-cd sift
+git clone https://github.com/omarhassanatef/diagno.git
+cd diagno
 npm install
 npm run build
-npm link          # makes `sift` available globally
+npm link          # makes `diagno` available globally
 ```
 
 Requires Node.js 18 or later.
@@ -98,22 +98,22 @@ Requires Node.js 18 or later.
 ## Usage
 
 ```bash
-sift <command...>
+diagno <command...>
 ```
 
 ```bash
-sift npm test
-sift npm run build
-sift pytest
-sift docker compose up
+diagno npm test
+diagno npm run build
+diagno pytest
+diagno docker compose up
 ```
 
-SIFT streams the wrapped command's own output live, exactly as it would
+DIAGNO streams the wrapped command's own output live, exactly as it would
 print normally, then adds its diagnosis underneath. It exits with the same
 exit code as the command it ran, so it's safe to drop into scripts and CI:
 
 ```bash
-sift npm test && echo "ok"
+diagno npm test && echo "ok"
 ```
 
 ## How it works
@@ -135,7 +135,7 @@ produced a confident diagnosis — and even then, it only ever sees a small,
 redacted, explicitly-built payload (see [Privacy](#privacy)), never your
 whole repository.
 
-## What SIFT can diagnose
+## What DIAGNO can diagnose
 
 Eight deterministic analyzers ship today, each producing evidence-backed
 findings with a confidence score:
@@ -158,7 +158,7 @@ rest of a diagnostic run.
 
 If no deterministic analyzer produces a confident diagnosis (below a 70%
 confidence threshold, including "no finding at all") and an API key is
-available, SIFT asks an AI reasoning layer to explain the failure. That
+available, DIAGNO asks an AI reasoning layer to explain the failure. That
 explanation always appears in its own clearly labeled section:
 
 ```
@@ -174,9 +174,9 @@ Assumptions (not directly confirmed):
 Confidence: 55% (AI estimate, not verified by execution)
 ```
 
-Facts and hypotheses are never blurred together, and SIFT never claims a
+Facts and hypotheses are never blurred together, and DIAGNO never claims a
 fix works without actually re-running the command. Without an API key set,
-SIFT works exactly the same for everything deterministic analyzers can
+DIAGNO works exactly the same for everything deterministic analyzers can
 catch — it just skips the AI fallback for the remaining ambiguous cases,
 with a one-line note saying so and how to enable it.
 
@@ -184,12 +184,12 @@ Use `--no-ai` to skip this fallback entirely.
 
 ## Applying fixes with `--fix`
 
-Add `--fix` to have SIFT offer to fix the top finding automatically, when
+Add `--fix` to have DIAGNO offer to fix the top finding automatically, when
 it's confident enough to compute the _exact_ resulting file content (not
 every finding qualifies — many are suggestions for a human to apply):
 
 ```
-$ sift --fix npm test
+$ diagno --fix npm test
 ... npm test's own output ...
 
 ✗ npm test (exit code 1, 3.2s)
@@ -225,7 +225,7 @@ The fix flow always follows the same steps, in order, and never skips one:
    a file expected to be created already exists.
 2. **Show a diff** — a standard unified diff, always shown, even with
    `--yes` — you always see exactly what will change.
-3. **Explicit confirmation** — SIFT prompts `[y/N]` and does nothing on
+3. **Explicit confirmation** — DIAGNO prompts `[y/N]` and does nothing on
    anything other than `y`/`yes`. Use `--yes` to auto-confirm (e.g. in a
    script you already trust), or run non-interactively with plain `--fix`
    to always decline (a safe default for CI).
@@ -234,26 +234,26 @@ The fix flow always follows the same steps, in order, and never skips one:
 5. **Rerun and verify** — reruns your _original_ command and reports
    whether it actually resolved the failure.
 
-SIFT never executes arbitrary commands an AI suggests, and never applies
+DIAGNO never executes arbitrary commands an AI suggests, and never applies
 anything without a diff and your explicit approval first.
 
 ## Configuration
 
-You don't have to export an environment variable in every shell — SIFT can
+You don't have to export an environment variable in every shell — DIAGNO can
 store your API key locally:
 
 ```bash
-sift config set api-key sk-ant-...
-sift config set model claude-3-5-sonnet-latest   # optional
+diagno config set api-key sk-ant-...
+diagno config set model claude-3-5-sonnet-latest   # optional
 
-sift config get api-key            # masked by default
-sift config get api-key --reveal   # shown in full
-sift config list
-sift config unset api-key
-sift config path                   # prints the config file location
+diagno config get api-key            # masked by default
+diagno config get api-key --reveal   # shown in full
+diagno config list
+diagno config unset api-key
+diagno config path                   # prints the config file location
 ```
 
-Settings are stored as plain JSON at `~/.sift/config.json`, written with
+Settings are stored as plain JSON at `~/.diagno/config.json`, written with
 owner-only file permissions (`600`). This is a convenience, not a secrets
 vault — treat it like any other local credential file: don't commit it,
 don't share it.
@@ -261,11 +261,11 @@ don't share it.
 | Variable            | Purpose                                     |
 | ------------------- | ------------------------------------------- |
 | `ANTHROPIC_API_KEY` | Enables the AI-assisted fallback. Optional. |
-| `SIFT_AI_MODEL`     | Overrides the default Anthropic model used. |
+| `DIAGNO_AI_MODEL`   | Overrides the default Anthropic model used. |
 
 **Precedence:** the environment variables above, when set, always override
 the stored config — so CI can inject a key without ever touching disk,
-while your everyday shell can just rely on `sift config set` once.
+while your everyday shell can just rely on `diagno config set` once.
 
 ## Privacy
 
@@ -276,20 +276,20 @@ while your everyday shell can just rely on `sift config set` once.
   API keys, tokens, passwords, private keys, and JWTs.
 - Only a small, explicit set of files (`tsconfig.json`, Jest config, Docker
   files) are ever read — never your whole repository, never `node_modules`.
-- SIFT never proposes or runs destructive commands, and never applies a
+- DIAGNO never proposes or runs destructive commands, and never applies a
   file change without showing you the diff first.
 
 ## CLI reference
 
 ```
-sift <command...>          Run a command and diagnose a failure
-sift --help, -h            Show help
-sift --version, -v         Show the installed version
-sift --json <cmd...>       Machine-readable JSON output
-sift --no-ai <cmd...>      Skip the AI-assisted fallback
-sift --fix <cmd...>        Offer to apply the top fix (prompts for approval)
-sift --fix --yes <cmd...>  Same, but auto-confirm instead of prompting
-sift config ...            Manage stored settings (see Configuration)
+diagno <command...>          Run a command and diagnose a failure
+diagno --help, -h            Show help
+diagno --version, -v         Show the installed version
+diagno --json <cmd...>       Machine-readable JSON output
+diagno --no-ai <cmd...>      Skip the AI-assisted fallback
+diagno --fix <cmd...>        Offer to apply the top fix (prompts for approval)
+diagno --fix --yes <cmd...>  Same, but auto-confirm instead of prompting
+diagno config ...            Manage stored settings (see Configuration)
 ```
 
 ## Development
@@ -314,7 +314,7 @@ src/
   types/      shared data models (Finding, ProjectContext)
   ai/         AI reasoning layer: redaction, schemas, provider, orchestrator
   fixes/      Fix Engine: diff rendering, validation, atomic apply, rerun
-  config/     local settings store (~/.sift/config.json)
+  config/     local settings store (~/.diagno/config.json)
 tests/
   unit/            tests for individual modules
   unit/analyzers/  one test file per deterministic analyzer
@@ -337,7 +337,7 @@ tests/
   are all small interfaces, so alternative implementations can be swapped
   in without touching the orchestration layer.
 - **Fixes are validated and reversible.** Stale-patch detection, atomic
-  writes (temp file + rename), and a rerun-to-verify step before SIFT ever
+  writes (temp file + rename), and a rerun-to-verify step before DIAGNO ever
   says "fixed."
 - **Conservative auto-patching.** Only findings where an analyzer can
   compute the _entire_ resulting file content are auto-applicable with
@@ -350,7 +350,7 @@ tests/
 - [x] **Phase 2** — AI orchestrator (redaction, provider abstraction, structured schema)
 - [x] **Phase 3** — Fix Engine (diffs, explicit approval, atomic apply, rerun)
 - [ ] **Phase 4** — Product polish: npm publishing, deeper cross-platform
-      testing, `sift explain`/`sift check`/`sift doctor` secondary commands
+      testing, `diagno explain`/`diagno check`/`diagno doctor` secondary commands
 - [ ] Post-MVP: GitHub Actions integration, IDE integrations, local-model
       support, failure fingerprints, Python/Go/Java/.NET support
 

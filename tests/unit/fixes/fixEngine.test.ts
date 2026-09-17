@@ -14,7 +14,7 @@ import type { PatchProposal } from "../../../src/types/finding";
 let tmpDir: string;
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "sift-fixengine-"));
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "diagno-fixengine-"));
 });
 
 afterEach(() => {
@@ -28,7 +28,7 @@ describe("isAutoApplicable", () => {
 
   it("is false when newContent wasn't computed", () => {
     expect(
-      isAutoApplicable({ filePath: "x", description: "d", snippet: "s" })
+      isAutoApplicable({ filePath: "x", description: "d", snippet: "s" }),
     ).toBe(false);
   });
 
@@ -39,7 +39,7 @@ describe("isAutoApplicable", () => {
         description: "d",
         snippet: "s",
         newContent: "new file content",
-      })
+      }),
     ).toBe(true);
   });
 });
@@ -135,7 +135,7 @@ describe("applyPatchAtomically", () => {
     });
 
     expect(fs.readFileSync(filePath, "utf8")).toBe(
-      "module.exports = { moduleNameMapper: {} };\n"
+      "module.exports = { moduleNameMapper: {} };\n",
     );
     const remaining = fs.readdirSync(tmpDir);
     expect(remaining).toEqual(["jest.config.js"]);
@@ -161,7 +161,7 @@ describe("applyPatchAtomically", () => {
         filePath: path.join(tmpDir, "x.js"),
         description: "d",
         snippet: "s",
-      })
+      }),
     ).toThrow();
   });
 });
@@ -192,7 +192,7 @@ describe("applyAndRerun", () => {
       patch,
       runner,
       [process.execPath, "-e", script],
-      tmpDir
+      tmpDir,
     );
 
     expect(outcome.applied).toBe(true);
@@ -224,7 +224,7 @@ describe("applyAndRerun", () => {
       patch,
       runner,
       [process.execPath, "-e", script],
-      tmpDir
+      tmpDir,
     );
 
     expect(outcome.applied).toBe(true);

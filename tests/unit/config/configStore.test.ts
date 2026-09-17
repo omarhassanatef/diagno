@@ -16,7 +16,7 @@ import {
 let tmpHome: string;
 
 beforeEach(() => {
-  tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), "sift-config-test-"));
+  tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), "diagno-config-test-"));
 });
 
 afterEach(() => {
@@ -85,10 +85,10 @@ describe("configStore", () => {
   });
 
   describe("resolveAiModel", () => {
-    it("prefers SIFT_AI_MODEL over the stored config", () => {
+    it("prefers DIAGNO_AI_MODEL over the stored config", () => {
       writeConfig({ aiModel: "config-model" }, tmpHome);
-      expect(resolveAiModel(tmpHome, { SIFT_AI_MODEL: "env-model" })).toBe(
-        "env-model"
+      expect(resolveAiModel(tmpHome, { DIAGNO_AI_MODEL: "env-model" })).toBe(
+        "env-model",
       );
     });
 

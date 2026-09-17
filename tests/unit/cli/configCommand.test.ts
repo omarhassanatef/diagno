@@ -12,7 +12,7 @@ let stdoutSpy: ReturnType<typeof vi.spyOn>;
 let stderrSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
-  tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), "sift-config-cmd-test-"));
+  tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), "diagno-config-cmd-test-"));
   stdout = "";
   stderr = "";
   stdoutSpy = vi
@@ -40,7 +40,7 @@ describe("runConfigCommand", () => {
   it("shows help with no action, exiting 1", async () => {
     const code = await runConfigCommand([], tmpHome);
     expect(code).toBe(1);
-    expect(stdout).toContain("sift config - manage local SIFT settings");
+    expect(stdout).toContain("diagno config - manage local DIAGNO settings");
   });
 
   it("shows help with --help, exiting 0", async () => {
@@ -52,7 +52,7 @@ describe("runConfigCommand", () => {
   it("sets a value and masks it in the confirmation", async () => {
     const code = await runConfigCommand(
       ["set", "api-key", "sk-ant-abc123xyz789"],
-      tmpHome
+      tmpHome,
     );
     expect(code).toBe(0);
     expect(stdout).toContain("Saved api-key");
@@ -69,12 +69,15 @@ describe("runConfigCommand", () => {
   it("rejects set with no value", async () => {
     const code = await runConfigCommand(["set", "api-key"], tmpHome);
     expect(code).toBe(1);
-    expect(stderr).toContain("Usage: sift config set");
+    expect(stderr).toContain("Usage: diagno config set");
   });
 
   it("warns when ANTHROPIC_API_KEY env var will shadow the value just set", async () => {
     process.env.ANTHROPIC_API_KEY = "env-value";
-    const code = await runConfigCommand(["set", "api-key", "config-value"], tmpHome);
+    const code = await runConfigCommand(
+      ["set", "api-key", "config-value"],
+      tmpHome,
+    );
     expect(code).toBe(0);
     expect(stdout).toContain("ANTHROPIC_API_KEY is currently set");
   });
@@ -95,7 +98,7 @@ describe("runConfigCommand", () => {
     stdout = "";
     const revealedCode = await runConfigCommand(
       ["get", "api-key", "--reveal"],
-      tmpHome
+      tmpHome,
     );
     expect(revealedCode).toBe(0);
     expect(stdout).toContain("sk-ant-abc123xyz789");
@@ -122,7 +125,10 @@ describe("runConfigCommand", () => {
   });
 
   it("list shows the config path and masked values", async () => {
-    writeConfig({ apiKey: "sk-ant-abc123xyz789", aiModel: "some-model" }, tmpHome);
+    writeConfig(
+      { apiKey: "sk-ant-abc123xyz789", aiModel: "some-model" },
+      tmpHome,
+    );
     const code = await runConfigCommand(["list"], tmpHome);
     expect(code).toBe(0);
     expect(stdout).toContain("Config file:");
@@ -141,7 +147,7 @@ describe("runConfigCommand", () => {
   it("path prints the config file location", async () => {
     const code = await runConfigCommand(["path"], tmpHome);
     expect(code).toBe(0);
-    expect(stdout.trim()).toContain(".sift");
+    expect(stdout.trim()).toContain(".diagno");
     expect(stdout.trim()).toContain("config.json");
   });
 

@@ -6,7 +6,10 @@ const cliEntry = path.resolve(__dirname, "../../src/cli/index.ts");
 const tsxBin = path.resolve(__dirname, "../../node_modules/.bin/tsx");
 const demoFixture = path.resolve(__dirname, "../fixtures/killer-demo");
 
-function runCliIn(cwd: string, args: string[]): Promise<{
+function runCliIn(
+  cwd: string,
+  args: string[],
+): Promise<{
   stdout: string;
   code: number | null;
 }> {
@@ -22,17 +25,14 @@ function runCliIn(cwd: string, args: string[]): Promise<{
   });
 }
 
-describe("sift CLI end-to-end diagnosis (killer demo)", () => {
+describe("diagno CLI end-to-end diagnosis (killer demo)", () => {
   it("diagnoses the Jest path-alias mismatch with evidence and a fix", async () => {
-    const result = await runCliIn(demoFixture, [
-      "node",
-      "fake-test-runner.js",
-    ]);
+    const result = await runCliIn(demoFixture, ["node", "fake-test-runner.js"]);
 
     // The wrapped command's own output streamed through.
     expect(result.stdout).toContain("Cannot find module '@/modules/users'");
 
-    // SIFT's own diagnosis, in the blueprint's format.
+    // DIAGNO's own diagnosis, in the blueprint's format.
     expect(result.stdout).toContain("WHY IT FAILED");
     expect(result.stdout).toContain("EVIDENCE");
     expect(result.stdout).toContain("LIKELY FIX");

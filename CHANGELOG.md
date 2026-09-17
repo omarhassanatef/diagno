@@ -9,28 +9,31 @@ until a 1.0 release.
 ## [0.4.0] - Configuration
 
 ### Added
-- `sift config set/get/unset/list/path` for managing settings locally at
-  `~/.sift/config.json` (owner-only file permissions).
+
+- `diagno config set/get/unset/list/path` for managing settings locally at
+  `~/.diagno/config.json` (owner-only file permissions).
 - API key and model resolution now checks `ANTHROPIC_API_KEY` /
-  `SIFT_AI_MODEL` first, falling back to the stored config.
+  `DIAGNO_AI_MODEL` first, falling back to the stored config.
 - Secret values are masked by default in `config get`/`config list`, with a
   `--reveal` flag to show them in full.
 
 ## [0.3.0] - Fix Engine (Phase 3)
 
 ### Added
+
 - `--fix` flag: proposes a patch for the top finding, shows a unified diff,
   and asks for explicit confirmation before writing anything.
 - `--yes` flag to auto-confirm (for CI/non-interactive use).
 - Atomic patch application with a staleness check (refuses to apply if the
   target file changed since the patch was proposed).
-- After a fix is applied, SIFT automatically reruns the original command and
+- After a fix is applied, DIAGNO automatically reruns the original command and
   reports whether the failure is actually resolved.
 - `--json` output now includes the fix outcome as structured data.
 
 ## [0.2.0] - AI Orchestrator (Phase 2)
 
 ### Added
+
 - AI-assisted fallback analysis for failures that deterministic analyzers
   can't confidently explain (below a 70% confidence threshold).
 - Secret redaction pass (API keys, tokens, private keys, JWTs, `.env`-style
@@ -47,6 +50,7 @@ until a 1.0 release.
 ## [0.1.0] - Deterministic Diagnostics (Phase 1)
 
 ### Added
+
 - `ProjectDetector`: finds the project root and detects package manager,
   TypeScript/Jest/Vitest/Docker presence, lockfiles, and `.env` existence.
 - `ContextCollector`: bounded, privacy-aware reads of `tsconfig.json`, Jest
@@ -65,7 +69,8 @@ until a 1.0 release.
 ## [0.0.1] - CLI Foundation (Phase 0)
 
 ### Added
-- `sift <command...>`: runs a command, streams its output live while
+
+- `diagno <command...>`: runs a command, streams its output live while
   capturing it, and reports a clean success/failure summary — no opaque
   stack traces, even for command-not-found or signal termination.
 - Cross-platform `CommandRunner` interface backed by Node's `child_process`.

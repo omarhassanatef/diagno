@@ -26,7 +26,7 @@ function runCli(args: string[]): Promise<{
   });
 }
 
-describe("sift CLI", () => {
+describe("diagno CLI", () => {
   it("prints help and exits with code 1 when called with no arguments", async () => {
     const result = await runCli([]);
     expect(result.stdout).toContain("Usage:");

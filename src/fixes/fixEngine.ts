@@ -10,14 +10,12 @@ import type { CommandRunner, RunOutcome } from "../runner/types";
  * tells the two apart before doing anything.
  */
 export function isAutoApplicable(
-  patch: PatchProposal | undefined
+  patch: PatchProposal | undefined,
 ): patch is PatchProposal & { newContent: string } {
   return Boolean(patch && patch.newContent !== undefined);
 }
 
-export type ValidationResult =
-  | { ok: true }
-  | { ok: false; reason: string };
+export type ValidationResult = { ok: true } | { ok: false; reason: string };
 
 /**
  * Re-reads the target file right before applying and compares it against
@@ -53,7 +51,7 @@ export function validateTarget(patch: PatchProposal): ValidationResult {
   if (currentContent !== patch.beforeContent) {
     return {
       ok: false,
-      reason: `${patch.filePath} has changed since this fix was proposed. Refusing to apply a stale patch -- re-run SIFT to get an up-to-date diagnosis.`,
+      reason: `${patch.filePath} has changed since this fix was proposed. Refusing to apply a stale patch -- re-run DIAGNO to get an up-to-date diagnosis.`,
     };
   }
 
@@ -69,7 +67,7 @@ export function validateTarget(patch: PatchProposal): ValidationResult {
 export function applyPatchAtomically(patch: PatchProposal): void {
   if (patch.newContent === undefined) {
     throw new Error(
-      `Patch for ${patch.filePath} has no machine-applicable content.`
+      `Patch for ${patch.filePath} has no machine-applicable content.`,
     );
   }
 
@@ -78,7 +76,7 @@ export function applyPatchAtomically(patch: PatchProposal): void {
 
   const tmpPath = path.join(
     dir,
-    `.${path.basename(patch.filePath)}.sift-tmp-${process.pid}`
+    `.${path.basename(patch.filePath)}.diagno-tmp-${process.pid}`,
   );
 
   fs.writeFileSync(tmpPath, patch.newContent, "utf8");
@@ -103,16 +101,16 @@ export interface FixOutcome {
 
 /**
  * Applies a patch, then reruns the original failing command to check
- * whether the fix actually worked -- SIFT never claims success without
+ * whether the fix actually worked -- DIAGNO never claims success without
  * this execution evidence (blueprint's prompt rules apply just as much to
- * SIFT's own output as to an AI provider's).
+ * DIAGNO's own output as to an AI provider's).
  */
 export async function applyAndRerun(
   patch: PatchProposal,
   runner: CommandRunner,
   command: string[],
   cwd: string,
-  options: { stream?: boolean } = {}
+  options: { stream?: boolean } = {},
 ): Promise<FixOutcome> {
   applyPatchAtomically(patch);
   const rerun = await runner.run(command, { cwd, stream: options.stream });

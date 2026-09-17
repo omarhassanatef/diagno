@@ -22,7 +22,7 @@ export interface FailureContext {
 export type RunErrorType = "not-found" | "spawn-error";
 
 /**
- * The full result of running a command through SIFT's runner.
+ * The full result of running a command through DIAGNO's runner.
  * `success` is true only when the process exited with code 0 and was not
  * killed by a signal.
  */

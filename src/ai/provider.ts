@@ -3,7 +3,7 @@ import { AnalysisResultSchema } from "./schemas";
 import { SYSTEM_PROMPT, buildUserMessage } from "./prompts";
 
 /**
- * LLMProvider is the extension point for AI reasoning. SIFT's orchestrator
+ * LLMProvider is the extension point for AI reasoning. DIAGNO's orchestrator
  * only ever talks to this interface, never to a specific vendor's SDK
  * directly -- so hosted APIs, local models, or an organization's own
  * provider can be swapped in without touching the orchestrator.
@@ -15,7 +15,10 @@ export interface LLMProvider {
 }
 
 export class ProviderError extends Error {
-  constructor(message: string, readonly cause?: unknown) {
+  constructor(
+    message: string,
+    readonly cause?: unknown,
+  ) {
     super(message);
     this.name = "ProviderError";
   }
@@ -39,7 +42,7 @@ export interface AnthropicProviderOptions {
 /**
  * Calls the Anthropic Messages API directly over HTTPS. Requires an API key
  * (never hardcoded -- read from the environment by whoever constructs this).
- * The model name is configurable via SIFT_AI_MODEL since model availability
+ * The model name is configurable via DIAGNO_AI_MODEL since model availability
  * changes over time; check Anthropic's docs for current model names.
  */
 export class AnthropicProvider implements LLMProvider {
@@ -79,14 +82,14 @@ export class AnthropicProvider implements LLMProvider {
         `Failed to reach the AI provider (${this.id}): ${
           err instanceof Error ? err.message : String(err)
         }`,
-        err
+        err,
       );
     }
 
     if (!response.ok) {
       const body = await response.text().catch(() => "");
       throw new ProviderError(
-        `AI provider (${this.id}) returned HTTP ${response.status}: ${body.slice(0, 500)}`
+        `AI provider (${this.id}) returned HTTP ${response.status}: ${body.slice(0, 500)}`,
       );
     }
 
@@ -97,7 +100,7 @@ export class AnthropicProvider implements LLMProvider {
     const textBlock = data.content?.find((b) => b.type === "text")?.text;
     if (!textBlock) {
       throw new ProviderError(
-        `AI provider (${this.id}) returned no text content.`
+        `AI provider (${this.id}) returned no text content.`,
       );
     }
 
@@ -107,14 +110,14 @@ export class AnthropicProvider implements LLMProvider {
     } catch (err) {
       throw new ProviderError(
         `AI provider (${this.id}) did not return valid JSON.`,
-        err
+        err,
       );
     }
 
     const result = AnalysisResultSchema.safeParse(parsedJson);
     if (!result.success) {
       throw new ProviderError(
-        `AI provider (${this.id}) response did not match the required schema: ${result.error.message}`
+        `AI provider (${this.id}) response did not match the required schema: ${result.error.message}`,
       );
     }
 

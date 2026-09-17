@@ -4,29 +4,29 @@ import {
   updateConfig,
   maskSecret,
   resolveApiKey,
-  type SiftConfig,
+  type DiagnoConfig,
 } from "../config/configStore";
 
 /** Maps the user-facing key names to the internal config field names.
  * Both "api-key" and "apikey" are accepted since people type it both ways. */
-const KEY_ALIASES: Record<string, keyof SiftConfig> = {
+const KEY_ALIASES: Record<string, keyof DiagnoConfig> = {
   "api-key": "apiKey",
   apikey: "apiKey",
   model: "aiModel",
 };
 
 const VALID_KEYS = Array.from(new Set(Object.values(KEY_ALIASES)));
-const SECRET_FIELDS = new Set<keyof SiftConfig>(["apiKey"]);
+const SECRET_FIELDS = new Set<keyof DiagnoConfig>(["apiKey"]);
 
-const CONFIG_HELP = `sift config - manage local SIFT settings
+const CONFIG_HELP = `diagno config - manage local DIAGNO settings
 
 Usage:
-  sift config set <key> <value>   Store a value (e.g. your Anthropic API key)
-  sift config get <key>           Show a stored value (secrets are masked)
-  sift config unset <key>         Remove a stored value
-  sift config list                Show all stored settings
-  sift config path                Print the config file location
-  sift config --help              Show this help message
+  diagno config set <key> <value>   Store a value (e.g. your Anthropic API key)
+  diagno config get <key>           Show a stored value (secrets are masked)
+  diagno config unset <key>         Remove a stored value
+  diagno config list                Show all stored settings
+  diagno config path                Print the config file location
+  diagno config --help              Show this help message
 
 Keys:
   api-key    Anthropic API key used for AI-assisted analysis
@@ -35,23 +35,23 @@ Keys:
 Flags:
   --reveal   Show secret values in full instead of masked (get/list only)
 
-Precedence: the ANTHROPIC_API_KEY and SIFT_AI_MODEL environment variables,
+Precedence: the ANTHROPIC_API_KEY and DIAGNO_AI_MODEL environment variables,
 when set, always take priority over values stored here.
 
 Settings are stored in plain JSON at your config file path (see
-'sift config path'), with owner-only file permissions. Treat it like any
+'diagno config path'), with owner-only file permissions. Treat it like any
 other local credential file.
 `;
 
-function normalizeKey(raw: string | undefined): keyof SiftConfig | undefined {
+function normalizeKey(raw: string | undefined): keyof DiagnoConfig | undefined {
   if (!raw) return undefined;
   return KEY_ALIASES[raw.toLowerCase()];
 }
 
 function displayValue(
-  field: keyof SiftConfig,
+  field: keyof DiagnoConfig,
   value: string | undefined,
-  reveal: boolean
+  reveal: boolean,
 ): string {
   if (value === undefined) return "(not set)";
   if (SECRET_FIELDS.has(field) && !reveal) return maskSecret(value);
@@ -60,18 +60,18 @@ function displayValue(
 
 function unknownKeyMessage(raw: string): string {
   return `Unknown config key "${raw}". Valid keys: ${Array.from(
-    new Set(Object.keys(KEY_ALIASES))
+    new Set(Object.keys(KEY_ALIASES)),
   ).join(", ")}`;
 }
 
 /**
- * Handles `sift config ...`. Returns the process exit code -- this never
+ * Handles `diagno config ...`. Returns the process exit code -- this never
  * runs a wrapped command, so it's kept entirely separate from the main
  * command-diagnosis flow in cli/index.ts.
  */
 export async function runConfigCommand(
   args: string[],
-  homeDir?: string
+  homeDir?: string,
 ): Promise<number> {
   const [action, ...rest] = args;
   const reveal = rest.includes("--reveal");
@@ -92,7 +92,7 @@ export async function runConfigCommand(
         return 1;
       }
       if (!value) {
-        process.stderr.write(`Usage: sift config set ${rawKey} <value>\n`);
+        process.stderr.write(`Usage: diagno config set ${rawKey} <value>\n`);
         return 1;
       }
 
@@ -100,11 +100,11 @@ export async function runConfigCommand(
 
       const envOverride = field === "apiKey" && process.env.ANTHROPIC_API_KEY;
       process.stdout.write(
-        `Saved ${rawKey} = ${displayValue(field, value, reveal)}\n`
+        `Saved ${rawKey} = ${displayValue(field, value, reveal)}\n`,
       );
       if (envOverride) {
         process.stdout.write(
-          `Note: ANTHROPIC_API_KEY is currently set in your environment and will take priority over this stored value.\n`
+          `Note: ANTHROPIC_API_KEY is currently set in your environment and will take priority over this stored value.\n`,
         );
       }
       return 0;
@@ -118,7 +118,7 @@ export async function runConfigCommand(
       }
       const config = readConfig(homeDir);
       process.stdout.write(
-        `${positional[0]}: ${displayValue(field, config[field], reveal)}\n`
+        `${positional[0]}: ${displayValue(field, config[field], reveal)}\n`,
       );
       return 0;
     }
@@ -139,16 +139,16 @@ export async function runConfigCommand(
       process.stdout.write(`Config file: ${getConfigPath(homeDir)}\n\n`);
       for (const field of VALID_KEYS) {
         const label = Object.keys(KEY_ALIASES).find(
-          (k) => KEY_ALIASES[k] === field && !k.includes("apikey")
+          (k) => KEY_ALIASES[k] === field && !k.includes("apikey"),
         )!;
         process.stdout.write(
-          `${label}: ${displayValue(field, config[field], reveal)}\n`
+          `${label}: ${displayValue(field, config[field], reveal)}\n`,
         );
       }
       const { source } = resolveApiKey(homeDir);
       if (source === "env") {
         process.stdout.write(
-          `\n(api-key is currently sourced from the ANTHROPIC_API_KEY environment variable, which overrides the value above)\n`
+          `\n(api-key is currently sourced from the ANTHROPIC_API_KEY environment variable, which overrides the value above)\n`,
         );
       }
       return 0;

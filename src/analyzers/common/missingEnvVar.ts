@@ -59,7 +59,7 @@ export const missingEnvVarAnalyzer: Analyzer = {
 
       const explanation = declaredInEnvFile
         ? `"${varName}" is declared in .env but the failing command didn't see it -- likely because .env isn't being loaded (e.g. missing dotenv setup), or the command was run without the environment file sourced.`
-        : `"${varName}" is required but isn't declared anywhere SIFT can see (.env is ${
+        : `"${varName}" is required but isn't declared anywhere DIAGNO can see (.env is ${
             project.hasEnvFile ? "present but missing this key" : "not present"
           }).`;
 
@@ -73,12 +73,20 @@ export const missingEnvVarAnalyzer: Analyzer = {
         evidence,
         suggestedActions: declaredInEnvFile
           ? [
-              { description: `Confirm the command loads .env (e.g. via dotenv, or your process manager's env file support).` },
-              { description: `Try running with the variable set inline: ${varName}=... <command>` },
+              {
+                description: `Confirm the command loads .env (e.g. via dotenv, or your process manager's env file support).`,
+              },
+              {
+                description: `Try running with the variable set inline: ${varName}=... <command>`,
+              },
             ]
           : [
-              { description: `Add ${varName}=<value> to your .env file (never commit real secrets).` },
-              { description: `Or export it in your shell/CI before running the command.` },
+              {
+                description: `Add ${varName}=<value> to your .env file (never commit real secrets).`,
+              },
+              {
+                description: `Or export it in your shell/CI before running the command.`,
+              },
             ],
         // Values are never included -- only the fact that the key is
         // missing, per the blueprint's privacy rules.

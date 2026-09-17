@@ -2,7 +2,11 @@
 
 import * as readline from "readline/promises";
 import { NodeCommandRunner } from "../runner/commandRunner";
-import { renderOutcome, renderFindings, renderAiResult } from "../render/terminalRenderer";
+import {
+  renderOutcome,
+  renderFindings,
+  renderAiResult,
+} from "../render/terminalRenderer";
 import { ProjectDetector } from "../detection/projectDetector";
 import { ContextCollector } from "../context/contextCollector";
 import { runAnalyzers } from "../analyzers/orchestrator";
@@ -10,7 +14,11 @@ import { runAiAnalysis } from "../ai/orchestrator";
 import { AnthropicProvider } from "../ai/provider";
 import { runConfigCommand } from "./configCommand";
 import { resolveApiKey, resolveAiModel } from "../config/configStore";
-import { isAutoApplicable, validateTarget, applyAndRerun } from "../fixes/fixEngine";
+import {
+  isAutoApplicable,
+  validateTarget,
+  applyAndRerun,
+} from "../fixes/fixEngine";
 import { renderUnifiedDiff } from "../fixes/diff";
 import type { Finding, PatchProposal } from "../types/finding";
 import type { AnalyzerContext } from "../analyzers/types";
@@ -25,54 +33,54 @@ const pkg = require("../../package.json") as { version: string };
  * layer, per the blueprint's "AI augments ambiguous cases" rule. */
 const AI_HANDOFF_CONFIDENCE_THRESHOLD = 0.7;
 
-const HELP_TEXT = `sift - AI-assisted CLI for understanding failed developer commands
+const HELP_TEXT = `diagno - AI-assisted CLI for understanding failed developer commands
 
 Usage:
-  sift <command...>     Run a command and report on the result
-  sift --help, -h       Show this help message
-  sift --version, -v    Show the installed version
-  sift --json <cmd...>  Print machine-readable JSON instead of formatted text
-  sift --no-ai <cmd...> Skip AI-assisted analysis; deterministic checks only
-  sift --fix <cmd...>   Offer to apply the top fix, show a diff, and rerun
-  sift --fix --yes <cmd...>  Same, but auto-confirm instead of prompting
-  sift config ...        Manage stored settings (e.g. your API key)
+  diagno <command...>     Run a command and report on the result
+  diagno --help, -h       Show this help message
+  diagno --version, -v    Show the installed version
+  diagno --json <cmd...>  Print machine-readable JSON instead of formatted text
+  diagno --no-ai <cmd...> Skip AI-assisted analysis; deterministic checks only
+  diagno --fix <cmd...>   Offer to apply the top fix, show a diff, and rerun
+  diagno --fix --yes <cmd...>  Same, but auto-confirm instead of prompting
+  diagno config ...        Manage stored settings (e.g. your API key)
 
 Examples:
-  sift npm test
-  sift npm run build
-  sift pytest
+  diagno npm test
+  diagno npm run build
+  diagno pytest
 
-When a command fails, SIFT first runs local deterministic analyzers
+When a command fails, DIAGNO first runs local deterministic analyzers
 (dependency, TypeScript/Jest, env vars, ports, lockfiles, Docker). If none of
-those produce a confident diagnosis and ANTHROPIC_API_KEY is set, SIFT asks
+those produce a confident diagnosis and ANTHROPIC_API_KEY is set, DIAGNO asks
 an AI reasoning layer to explain the failure -- clearly labeled and kept
 separate from the deterministic, evidence-checked findings above it.
 
-With --fix, if the top finding has a fix SIFT can apply automatically, it
+With --fix, if the top finding has a fix DIAGNO can apply automatically, it
 shows a unified diff, asks for explicit confirmation, applies the change
 atomically, and reruns your original command to check whether it actually
-worked. SIFT never applies a fix without a diff and your explicit "y".
+worked. DIAGNO never applies a fix without a diff and your explicit "y".
 
 Environment variables:
   ANTHROPIC_API_KEY   Enables AI-assisted analysis when deterministic
-                      diagnosis is inconclusive. Without it, SIFT still
+                      diagnosis is inconclusive. Without it, DIAGNO still
                       works -- just without that fallback.
-  SIFT_AI_MODEL       Overrides the default Anthropic model used.
+  DIAGNO_AI_MODEL       Overrides the default Anthropic model used.
 
 Both of the above can also be stored locally instead, so you don't have to
 export them in every shell:
-  sift config set api-key <your-key>
-  sift config set model <model-name>
-Run 'sift config --help' for details. A value set via environment variable
+  diagno config set api-key <your-key>
+  diagno config set model <model-name>
+Run 'diagno config --help' for details. A value set via environment variable
 always takes priority over a stored one.
 `;
 
-const SIFT_FLAGS = new Set(["--json", "--no-ai", "--fix", "--yes"]);
+const DIAGNO_FLAGS = new Set(["--json", "--no-ai", "--fix", "--yes"]);
 
-/** Splits argv into SIFT's own leading flags and the wrapped command.
- * Only flags SIFT recognizes are consumed from the front; anything else
+/** Splits argv into DIAGNO's own leading flags and the wrapped command.
+ * Only flags DIAGNO recognizes are consumed from the front; anything else
  * (including flags) is treated as the start of the wrapped command, since
- * those belong to the tool being run, not to SIFT. */
+ * those belong to the tool being run, not to DIAGNO. */
 function parseArgv(argv: string[]): {
   json: boolean;
   noAi: boolean;
@@ -85,7 +93,7 @@ function parseArgv(argv: string[]): {
   let fix = false;
   let yes = false;
   let i = 0;
-  while (i < argv.length && SIFT_FLAGS.has(argv[i])) {
+  while (i < argv.length && DIAGNO_FLAGS.has(argv[i])) {
     if (argv[i] === "--json") json = true;
     if (argv[i] === "--no-ai") noAi = true;
     if (argv[i] === "--fix") fix = true;
@@ -97,7 +105,7 @@ function parseArgv(argv: string[]): {
 
 async function diagnose(
   cwd: string,
-  failure: Awaited<ReturnType<NodeCommandRunner["run"]>>
+  failure: Awaited<ReturnType<NodeCommandRunner["run"]>>,
 ): Promise<{ findings: Finding[]; context: AnalyzerContext }> {
   const detector = new ProjectDetector();
   const collector = new ContextCollector();
@@ -109,13 +117,16 @@ async function diagnose(
 }
 
 function isDiagnosisAmbiguous(findings: Finding[]): boolean {
-  return findings.length === 0 || findings[0].confidence < AI_HANDOFF_CONFIDENCE_THRESHOLD;
+  return (
+    findings.length === 0 ||
+    findings[0].confidence < AI_HANDOFF_CONFIDENCE_THRESHOLD
+  );
 }
 
 async function maybeRunAi(
   context: AnalyzerContext,
   findings: Finding[],
-  noAi: boolean
+  noAi: boolean,
 ): Promise<AiOutcome | undefined> {
   if (noAi || !isDiagnosisAmbiguous(findings)) return undefined;
 
@@ -124,7 +135,7 @@ async function maybeRunAi(
     return {
       ok: false,
       error:
-        "No Anthropic API key found (checked ANTHROPIC_API_KEY and 'sift config'); skipping AI-assisted analysis. Run `sift config set api-key <key>` to enable it.",
+        "No Anthropic API key found (checked ANTHROPIC_API_KEY and 'diagno config'); skipping AI-assisted analysis. Run `diagno config set api-key <key>` to enable it.",
     };
   }
 
@@ -175,19 +186,23 @@ async function runFixFlow(
   command: string[],
   cwd: string,
   json: boolean,
-  autoYes: boolean
+  autoYes: boolean,
 ): Promise<FixReport> {
   const patch = findings[0]?.patch;
 
   if (!patch) {
-    return { applicable: false, reason: "No finding with a proposed fix was available." };
+    return {
+      applicable: false,
+      reason: "No finding with a proposed fix was available.",
+    };
   }
 
   if (!isAutoApplicable(patch)) {
     return {
       applicable: false,
       patch,
-      reason: "SIFT can't confidently auto-apply this fix yet -- the suggested change requires human judgment.",
+      reason:
+        "DIAGNO can't confidently auto-apply this fix yet -- the suggested change requires human judgment.",
     };
   }
 
@@ -196,7 +211,11 @@ async function runFixFlow(
     return { applicable: true, patch, reason: validation.reason };
   }
 
-  const diff = renderUnifiedDiff(patch.filePath, patch.beforeContent, patch.newContent);
+  const diff = renderUnifiedDiff(
+    patch.filePath,
+    patch.beforeContent,
+    patch.newContent,
+  );
 
   if (!json) {
     // Always show the diff before applying anything -- even with --yes,
@@ -210,7 +229,13 @@ async function runFixFlow(
     if (json) {
       // JSON output is meant to be parsed, not to block on an interactive
       // prompt -- require --yes explicitly in this mode instead.
-      return { applicable: true, patch, diff, requiresConfirmation: true, confirmed: false };
+      return {
+        applicable: true,
+        patch,
+        diff,
+        requiresConfirmation: true,
+        confirmed: false,
+      };
     }
     confirmed = await promptConfirm("Apply this fix? [y/N] ");
   }
@@ -219,7 +244,9 @@ async function runFixFlow(
     return { applicable: true, patch, diff, confirmed: false };
   }
 
-  const fixOutcome = await applyAndRerun(patch, runner, command, cwd, { stream: !json });
+  const fixOutcome = await applyAndRerun(patch, runner, command, cwd, {
+    stream: !json,
+  });
   return {
     applicable: true,
     patch,
@@ -304,13 +331,24 @@ async function main(): Promise<void> {
     aiOutcome = await maybeRunAi(diagnosis.context, findings, noAi);
 
     if (fix) {
-      fixReport = await runFixFlow(findings, runner, command, outcome.cwd, json, yes);
+      fixReport = await runFixFlow(
+        findings,
+        runner,
+        command,
+        outcome.cwd,
+        json,
+        yes,
+      );
     }
   }
 
   if (json) {
     process.stdout.write(
-      JSON.stringify({ outcome, findings, ai: aiOutcome, fix: fixReport }, null, 2) + "\n"
+      JSON.stringify(
+        { outcome, findings, ai: aiOutcome, fix: fixReport },
+        null,
+        2,
+      ) + "\n",
     );
   } else {
     process.stdout.write("\n");
@@ -319,7 +357,7 @@ async function main(): Promise<void> {
       process.stdout.write("\n" + renderFindings(findings) + "\n");
       if (aiOutcome?.ok) {
         process.stdout.write(
-          "\n" + renderAiResult(aiOutcome.result, aiOutcome.providerId) + "\n"
+          "\n" + renderAiResult(aiOutcome.result, aiOutcome.providerId) + "\n",
         );
       } else if (aiOutcome && !aiOutcome.ok && isDiagnosisAmbiguous(findings)) {
         process.stdout.write(`\n(${aiOutcome.error})\n`);
@@ -351,6 +389,6 @@ main().catch((err: unknown) => {
   // If something still goes wrong here, fail cleanly rather than dumping a
   // raw stack trace.
   const message = err instanceof Error ? err.message : String(err);
-  process.stderr.write(`sift: unexpected internal error: ${message}\n`);
+  process.stderr.write(`diagno: unexpected internal error: ${message}\n`);
   process.exit(1);
 });

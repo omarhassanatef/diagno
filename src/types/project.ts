@@ -1,7 +1,7 @@
 export type PackageManager = "npm" | "yarn" | "pnpm" | "unknown";
 
 /**
- * ProjectContext describes the static shape of the project SIFT is running
+ * ProjectContext describes the static shape of the project DIAGNO is running
  * in: what kind of project it is, which tooling it uses, and where its
  * config files live. This is gathered once per run via ProjectDetector and
  * is deliberately shallow -- it answers "what is here", not "what broke".

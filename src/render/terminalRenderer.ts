@@ -14,7 +14,7 @@ function formatDuration(ms: number): string {
  * Renders a one-line summary of a command's outcome. Phase 0 intentionally
  * keeps this minimal: the child process's own stdout/stderr has already been
  * streamed live, so this line just tells the developer, at a glance, what
- * SIFT itself observed. Deterministic analyzers and AI explanations are
+ * DIAGNO itself observed. Deterministic analyzers and AI explanations are
  * added in later phases.
  */
 export function renderOutcome(outcome: RunOutcome): string {
@@ -67,7 +67,7 @@ export function renderFinding(finding: Finding): string {
       finding.patch.snippet
         .split("\n")
         .map((l) => " " + l)
-        .join("\n")
+        .join("\n"),
     );
   }
   for (const action of finding.suggestedActions) {
@@ -85,7 +85,7 @@ export function renderFinding(finding: Finding): string {
  * (most confident) finding in full, followed by a short mention of any
  * additional findings so the developer knows more context is available.
  * Falls back to an honest "nothing found" message rather than fabricating
- * a diagnosis -- SIFT should remain useful (and trustworthy) without AI.
+ * a diagnosis -- DIAGNO should remain useful (and trustworthy) without AI.
  */
 export function renderFindings(findings: Finding[]): string {
   if (findings.length === 0) {
@@ -96,7 +96,9 @@ export function renderFindings(findings: Finding[]): string {
   const sections = [renderFinding(top)];
 
   if (rest.length > 0) {
-    const others = rest.map((f) => `- ${f.title} (${Math.round(f.confidence * 100)}%)`);
+    const others = rest.map(
+      (f) => `- ${f.title} (${Math.round(f.confidence * 100)}%)`,
+    );
     sections.push(`Also detected:\n${others.join("\n")}`);
   }
 
@@ -111,7 +113,10 @@ export function renderFindings(findings: Finding[]): string {
  * blueprint's rule to always distinguish facts from hypotheses and to
  * treat AI as a reasoning layer, not the source of truth.
  */
-export function renderAiResult(result: AnalysisResult, providerId: string): string {
+export function renderAiResult(
+  result: AnalysisResult,
+  providerId: string,
+): string {
   const lines: string[] = [];
 
   lines.push(`AI-ASSISTED EXPLANATION (via ${providerId}, unverified)`);
@@ -139,17 +144,21 @@ export function renderAiResult(result: AnalysisResult, providerId: string): stri
 
   if (result.patchProposal) {
     lines.push("");
-    lines.push(`Possible fix (${result.patchProposal.filePath}): ${result.patchProposal.description}`);
+    lines.push(
+      `Possible fix (${result.patchProposal.filePath}): ${result.patchProposal.description}`,
+    );
     lines.push(
       result.patchProposal.snippet
         .split("\n")
         .map((l) => " " + l)
-        .join("\n")
+        .join("\n"),
     );
   }
 
   lines.push("");
-  lines.push(`Confidence: ${Math.round(result.confidence * 100)}% (AI estimate, not verified by execution)`);
+  lines.push(
+    `Confidence: ${Math.round(result.confidence * 100)}% (AI estimate, not verified by execution)`,
+  );
 
   return lines.join("\n");
 }

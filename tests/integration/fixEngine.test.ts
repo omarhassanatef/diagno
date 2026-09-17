@@ -10,7 +10,7 @@ const fixtureSource = path.resolve(__dirname, "../fixtures/fixable-demo");
 
 function runCliIn(
   cwd: string,
-  args: string[]
+  args: string[],
 ): Promise<{ stdout: string; code: number | null }> {
   return new Promise((resolve) => {
     const child = spawn(tsxBin, [cliEntry, ...args], {
@@ -29,7 +29,7 @@ let workDir: string;
 beforeEach(() => {
   // Copy the fixture into a scratch directory so --fix's real file mutation
   // never touches the repo's own fixture (keeping the test idempotent).
-  workDir = fs.mkdtempSync(path.join(os.tmpdir(), "sift-fix-e2e-"));
+  workDir = fs.mkdtempSync(path.join(os.tmpdir(), "diagno-fix-e2e-"));
   for (const name of fs.readdirSync(fixtureSource)) {
     fs.copyFileSync(path.join(fixtureSource, name), path.join(workDir, name));
   }
@@ -39,11 +39,11 @@ afterEach(() => {
   fs.rmSync(workDir, { recursive: true, force: true });
 });
 
-describe("sift --fix end-to-end", () => {
+describe("diagno --fix end-to-end", () => {
   it("shows a diff, applies the fix, reruns, and confirms resolution with --yes", async () => {
     const jestConfigBefore = fs.readFileSync(
       path.join(workDir, "jest.config.js"),
-      "utf8"
+      "utf8",
     );
     expect(jestConfigBefore).not.toContain("moduleNameMapper");
 
@@ -59,12 +59,14 @@ describe("sift --fix end-to-end", () => {
 
     // The rerun and final verdict.
     expect(result.stdout).toContain("Re-running: node check-fixed.js");
-    expect(result.stdout).toContain("Fixed! The original failure no longer reproduces.");
+    expect(result.stdout).toContain(
+      "Fixed! The original failure no longer reproduces.",
+    );
     expect(result.code).toBe(0);
 
     const jestConfigAfter = fs.readFileSync(
       path.join(workDir, "jest.config.js"),
-      "utf8"
+      "utf8",
     );
     expect(jestConfigAfter).toContain("moduleNameMapper");
     // The rest of the original file must survive.
@@ -79,7 +81,7 @@ describe("sift --fix end-to-end", () => {
 
     const jestConfigAfter = fs.readFileSync(
       path.join(workDir, "jest.config.js"),
-      "utf8"
+      "utf8",
     );
     expect(jestConfigAfter).not.toContain("moduleNameMapper");
   });
@@ -99,7 +101,7 @@ describe("sift --fix end-to-end", () => {
 
     const jestConfigAfter = fs.readFileSync(
       path.join(workDir, "jest.config.js"),
-      "utf8"
+      "utf8",
     );
     expect(jestConfigAfter).not.toContain("moduleNameMapper");
   });

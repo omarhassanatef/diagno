@@ -1,9 +1,9 @@
 {
-  "name": "sift-cli",
+  "name": "diagno",
   "version": "0.4.0",
   "description": "AI-assisted CLI that diagnoses failed developer commands: deterministic checks first, AI as a fallback reasoning layer, and safe, explicit fixes you approve before they touch a file.",
   "bin": {
-    "sift": "dist/cli/index.js"
+    "diagno": "dist/cli/index.js"
   },
   "main": "./dist/cli/index.js",
   "files": [
@@ -44,12 +44,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/omarhassanatef/sift.git"
+    "url": "git+https://github.com/omarhassanatef/diagno.git"
   },
   "bugs": {
-    "url": "https://github.com/omarhassanatef/sift/issues"
+    "url": "https://github.com/omarhassanatef/diagno/issues"
   },
-  "homepage": "https://github.com/omarhassanatef/sift#readme",
+  "homepage": "https://github.com/omarhassanatef/diagno#readme",
   "dependencies": {
     "diff": "^5.2.0",
     "semver": "^7.6.0",
