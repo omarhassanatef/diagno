@@ -1,5 +1,9 @@
 # SIFT
 
+<p align="center">
+  <img src="assets/logo.png" alt="Sift logo" width="180">
+</p>
+
 **Make a failed command understandable in seconds.**
 
 SIFT sits between you and a failed command. It runs the command, diagnoses
@@ -56,7 +60,7 @@ Confidence: 96%
 
 ## Why SIFT
 
-Most failed commands print everything *except* the answer: a wall of stack
+Most failed commands print everything _except_ the answer: a wall of stack
 trace, a cryptic exit code, a stderr line that assumes you already know the
 codebase. SIFT's philosophy, in order:
 
@@ -136,16 +140,16 @@ whole repository.
 Eight deterministic analyzers ship today, each producing evidence-backed
 findings with a confidence score:
 
-| Analyzer | Catches |
-|---|---|
-| **Missing dependency** | A package is imported but not installed, or not declared at all |
-| **TypeScript/Jest path-alias mismatch** | `tsconfig.json` defines a `@/*`-style alias Jest's resolver doesn't know about |
-| **Missing environment variable** | Output reports a required env var that isn't set or declared |
-| **Node version mismatch** | The running Node version doesn't satisfy `package.json`'s `engines.node` |
-| **Port already in use** | `EADDRINUSE`, with a best-effort, read-only lookup of what's holding the port |
-| **TypeScript config conflict** | A broken `extends` path, or a known `tsc` config error code |
-| **Lockfile / package-manager mismatch** | Multiple lockfiles present, or the wrong package manager was invoked |
-| **Docker/container issues** | Daemon not running, port already allocated, missing network, image pull denied, disk full |
+| Analyzer                                | Catches                                                                                   |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Missing dependency**                  | A package is imported but not installed, or not declared at all                           |
+| **TypeScript/Jest path-alias mismatch** | `tsconfig.json` defines a `@/*`-style alias Jest's resolver doesn't know about            |
+| **Missing environment variable**        | Output reports a required env var that isn't set or declared                              |
+| **Node version mismatch**               | The running Node version doesn't satisfy `package.json`'s `engines.node`                  |
+| **Port already in use**                 | `EADDRINUSE`, with a best-effort, read-only lookup of what's holding the port             |
+| **TypeScript config conflict**          | A broken `extends` path, or a known `tsc` config error code                               |
+| **Lockfile / package-manager mismatch** | Multiple lockfiles present, or the wrong package manager was invoked                      |
+| **Docker/container issues**             | Daemon not running, port already allocated, missing network, image pull denied, disk full |
 
 Every analyzer is independent — one throwing an error never takes down the
 rest of a diagnostic run.
@@ -181,7 +185,7 @@ Use `--no-ai` to skip this fallback entirely.
 ## Applying fixes with `--fix`
 
 Add `--fix` to have SIFT offer to fix the top finding automatically, when
-it's confident enough to compute the *exact* resulting file content (not
+it's confident enough to compute the _exact_ resulting file content (not
 every finding qualifies — many are suggestions for a human to apply):
 
 ```
@@ -227,7 +231,7 @@ The fix flow always follows the same steps, in order, and never skips one:
    to always decline (a safe default for CI).
 4. **Apply atomically** — writes to a temp file and renames it over the
    target, so a crash mid-write can never leave a half-written file.
-5. **Rerun and verify** — reruns your *original* command and reports
+5. **Rerun and verify** — reruns your _original_ command and reports
    whether it actually resolved the failure.
 
 SIFT never executes arbitrary commands an AI suggests, and never applies
@@ -254,10 +258,10 @@ owner-only file permissions (`600`). This is a convenience, not a secrets
 vault — treat it like any other local credential file: don't commit it,
 don't share it.
 
-| Variable | Purpose |
-|---|---|
+| Variable            | Purpose                                     |
+| ------------------- | ------------------------------------------- |
 | `ANTHROPIC_API_KEY` | Enables the AI-assisted fallback. Optional. |
-| `SIFT_AI_MODEL` | Overrides the default Anthropic model used. |
+| `SIFT_AI_MODEL`     | Overrides the default Anthropic model used. |
 
 **Precedence:** the environment variables above, when set, always override
 the stored config — so CI can inject a key without ever touching disk,
@@ -265,7 +269,7 @@ while your everyday shell can just rely on `sift config set` once.
 
 ## Privacy
 
-- `.env` files are **never read for their values** — only variable *names*
+- `.env` files are **never read for their values** — only variable _names_
   are collected, to check whether a required variable is declared.
 - Anything sent to the AI provider (stdout/stderr, config file contents)
   passes through a redaction pass first, stripping things that look like
@@ -336,7 +340,7 @@ tests/
   writes (temp file + rename), and a rerun-to-verify step before SIFT ever
   says "fixed."
 - **Conservative auto-patching.** Only findings where an analyzer can
-  compute the *entire* resulting file content are auto-applicable with
+  compute the _entire_ resulting file content are auto-applicable with
   `--fix`. Everything else is a suggestion for you to apply by hand.
 
 ## Roadmap
