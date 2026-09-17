@@ -1,0 +1,63 @@
+{
+  "name": "sift-cli",
+  "version": "0.4.0",
+  "description": "AI-assisted CLI that diagnoses failed developer commands: deterministic checks first, AI as a fallback reasoning layer, and safe, explicit fixes you approve before they touch a file.",
+  "bin": {
+    "sift": "./dist/cli/index.js"
+  },
+  "main": "./dist/cli/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node -e \"try{require('fs').chmodSync('dist/cli/index.js','755')}catch(e){}\"",
+    "dev": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "cli",
+    "developer-tools",
+    "debugging",
+    "testing",
+    "jest",
+    "typescript",
+    "docker",
+    "ai",
+    "anthropic",
+    "claude",
+    "error-diagnosis",
+    "devx"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/sift.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/sift/issues"
+  },
+  "homepage": "https://github.com/your-username/sift#readme",
+  "dependencies": {
+    "diff": "^5.2.0",
+    "semver": "^7.6.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/diff": "^5.2.0",
+    "@types/node": "^20.14.0",
+    "@types/semver": "^7.5.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

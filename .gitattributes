@@ -1,0 +1,6 @@
+# Normalize line endings for everyone, regardless of platform or local git config.
+* text=auto eol=lf
+
+# Windows-specific scripts should keep CRLF if any are ever added.
+*.cmd text eol=crlf
+*.bat text eol=crlf
