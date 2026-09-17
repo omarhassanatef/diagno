@@ -37,16 +37,19 @@
     "error-diagnosis",
     "devx"
   ],
-  "author": "",
+  "author": {
+    "name": "Omar Hassan Atef",
+    "url": "https://github.com/omarhassanatef"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/sift.git"
+    "url": "git+https://github.com/omarhassanatef/sift.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/sift/issues"
+    "url": "https://github.com/omarhassanatef/sift/issues"
   },
-  "homepage": "https://github.com/your-username/sift#readme",
+  "homepage": "https://github.com/omarhassanatef/sift#readme",
   "dependencies": {
     "diff": "^5.2.0",
     "semver": "^7.6.0",

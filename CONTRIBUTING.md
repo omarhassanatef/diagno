@@ -7,7 +7,7 @@ stand.
 ## Getting started
 
 ```bash
-git clone https://github.com/your-username/sift.git
+git clone https://github.com/omarhassanatef/sift.git
 cd sift
 npm install
 npm run dev -- npm test   # run the CLI from source, no build step

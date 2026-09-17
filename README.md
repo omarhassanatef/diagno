@@ -11,7 +11,7 @@ the failure with fast local checks, falls back to an AI reasoning layer only
 when it has to, and proposes — never silently applies — the smallest safe
 fix.
 
-[![CI](https://github.com/your-username/sift/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/sift/actions/workflows/ci.yml)
+[![CI](https://github.com/omarhassanatef/sift/actions/workflows/ci.yml/badge.svg)](https://github.com/omarhassanatef/sift/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/sift-cli.svg)](https://www.npmjs.com/package/sift-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node >=18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
@@ -86,7 +86,7 @@ npm install -g sift-cli
 From source:
 
 ```bash
-git clone https://github.com/your-username/sift.git
+git clone https://github.com/omarhassanatef/sift.git
 cd sift
 npm install
 npm run build
