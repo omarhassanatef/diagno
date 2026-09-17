@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "description": "AI-assisted CLI that diagnoses failed developer commands: deterministic checks first, AI as a fallback reasoning layer, and safe, explicit fixes you approve before they touch a file.",
   "bin": {
-    "sift": "./dist/cli/index.js"
+    "sift": "dist/cli/index.js"
   },
   "main": "./dist/cli/index.js",
   "files": [
