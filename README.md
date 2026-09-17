@@ -77,7 +77,7 @@ codebase. SIFT's philosophy, in order:
 
 ## Install
 
-Once published to npm:
+Install SIFT globally with npm:
 
 ```bash
 npm install -g sift-cli
